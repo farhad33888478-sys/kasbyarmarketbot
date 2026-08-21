@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
 """
-اجرای اصلی kasbyarmarketbot
-نسخه‌ی دوپلتفرمی: هم‌زمان تلگرام و بله را پول می‌کند.
-ثبت کسب‌وکار از هر دو پلتفرم در همان دیتابیس مشترک ذخیره می‌شود
-و بلافاصله در وب‌سایت هم قابل مشاهده است (پس از تایید ادمین).
+kasbyarmarketbot
+ربات همزمان تلگرام و بله
+مناسب برای اجرا روی Render
 """
 
+import os
 import time
+import threading
+
+import uvicorn
+from fastapi import FastAPI
 
 import database as db
 import telegram_api as api
@@ -16,95 +20,307 @@ import bot
 import scheduler
 
 
+# =========================================================
+# Render Web Server
+# =========================================================
+
+app = FastAPI()
+
+
+@app.get("/")
+def health():
+    return {
+        "status": "ok",
+        "bot": "kasbyarmarketbot"
+    }
+
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "running"
+    }
+
+
+def start_web_server():
+    """
+    Render برای Web Service نیاز دارد که برنامه
+    روی PORT مشخص‌شده گوش بدهد.
+    """
+
+    port = int(os.environ.get("PORT", "10000"))
+
+    print(f"Web server starting on 0.0.0.0:{port}")
+
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=port,
+        log_level="info"
+    )
+
+
+# =========================================================
+# Main Bot
+# =========================================================
+
 def main():
 
-    print("در حال راه‌اندازی ربات kasbyarmarket ...")
+    # -----------------------------------------------------
+    # اجرای Web Server در Thread جدا
+    # -----------------------------------------------------
 
-    # ساخت دیتابیس
+    web_thread = threading.Thread(
+        target=start_web_server,
+        daemon=True
+    )
+
+    web_thread.start()
+
+    print("==============================================")
+    print("kasbyarmarketbot STARTING")
+    print("==============================================")
+
+    # -----------------------------------------------------
+    # Database
+    # -----------------------------------------------------
+
+    print("Initializing database...")
+
     db.init_db()
 
-    # اجرای بررسی اشتراک‌ها
+    # -----------------------------------------------------
+    # Scheduler
+    # -----------------------------------------------------
+
+    print("Starting scheduler...")
+
     scheduler.start_scheduler_thread()
 
+    # -----------------------------------------------------
+    # Bale
+    # -----------------------------------------------------
+
     bale_active = bale_api.is_enabled()
+
     if bale_active:
-        print("ربات با موفقیت اجرا شد (تلگرام + بله). در انتظار پیام‌ها ...")
+
+        print(
+            "Bot started successfully "
+            "(Telegram + Bale)"
+        )
+
     else:
-        print("ربات با موفقیت اجرا شد (فقط تلگرام - توکن بله تنظیم نشده). در انتظار پیام‌ها ...")
+
+        print(
+            "Bot started successfully "
+            "(Telegram only)"
+        )
+
+    # -----------------------------------------------------
+    # Update offsets
+    # -----------------------------------------------------
 
     tg_offset = None
     bale_offset = None
 
+    print("Waiting for messages...")
+
+    # =====================================================
+    # Main Loop
+    # =====================================================
+
     while True:
 
-        # ---------------- تلگرام ----------------
+        # =================================================
+        # Telegram
+        # =================================================
+
         try:
+
             bot.set_platform("telegram")
-            result = api.get_updates(offset=tg_offset)
+
+            result = api.get_updates(
+                offset=tg_offset
+            )
 
             if not result.get("ok"):
-                print("خطا در دریافت آپدیت‌های تلگرام:", result)
+
+                print(
+                    "[TELEGRAM ERROR]",
+                    result
+                )
+
             else:
-                updates = result.get("result", [])
+
+                updates = result.get(
+                    "result",
+                    []
+                )
+
                 if updates:
-                    print("TELEGRAM UPDATES:", len(updates))
+
+                    print(
+                        "TELEGRAM UPDATES:",
+                        len(updates)
+                    )
+
                 for update in updates:
-                    tg_offset = update["update_id"] + 1
+
+                    tg_offset = (
+                        update["update_id"] + 1
+                    )
+
                     try:
-                        process_update(update, platform="telegram")
+
+                        process_update(
+                            update,
+                            platform="telegram"
+                        )
+
                     except Exception as e:
-                        print("[main] خطا در پردازش آپدیت تلگرام:", e)
+
+                        print(
+                            "[TELEGRAM UPDATE ERROR]",
+                            e
+                        )
 
         except Exception as e:
-            print("[MAIN ERROR - telegram]", e)
+
+            print(
+                "[MAIN ERROR - TELEGRAM]",
+                e
+            )
+
             time.sleep(5)
 
-        # ---------------- بله ----------------
+        # =================================================
+        # Bale
+        # =================================================
+
         if bale_active:
+
             try:
+
                 bot.set_platform("bale")
-                result = bale_api.get_updates(offset=bale_offset)
+
+                result = bale_api.get_updates(
+                    offset=bale_offset
+                )
 
                 if not result.get("ok"):
-                    print("خطا در دریافت آپدیت‌های بله:", result)
+
+                    print(
+                        "[BALE ERROR]",
+                        result
+                    )
+
                 else:
-                    updates = result.get("result", [])
+
+                    updates = result.get(
+                        "result",
+                        []
+                    )
+
                     if updates:
-                        print("BALE UPDATES:", len(updates))
+
+                        print(
+                            "BALE UPDATES:",
+                            len(updates)
+                        )
+
                     for update in updates:
-                        bale_offset = update["update_id"] + 1
+
+                        bale_offset = (
+                            update["update_id"] + 1
+                        )
+
                         try:
-                            process_update(update, platform="bale")
+
+                            process_update(
+                                update,
+                                platform="bale"
+                            )
+
                         except Exception as e:
-                            print("[main] خطا در پردازش آپدیت بله:", e)
+
+                            print(
+                                "[BALE UPDATE ERROR]",
+                                e
+                            )
 
             except Exception as e:
-                print("[MAIN ERROR - bale]", e)
+
+                print(
+                    "[MAIN ERROR - BALE]",
+                    e
+                )
+
                 time.sleep(5)
 
 
-def process_update(update, platform="telegram"):
+# =========================================================
+# Process Update
+# =========================================================
+
+def process_update(
+    update,
+    platform="telegram"
+):
 
     bot.set_platform(platform)
 
-    # پیام معمولی
-    if "message" in update:
-        message = update["message"]
-        print("MESSAGE:", message)
+    # -----------------------------------------------------
+    # Normal Message
+    # -----------------------------------------------------
 
-        # بررسی رسید پرداخت
+    if "message" in update:
+
+        message = update["message"]
+
+        print(
+            "MESSAGE:",
+            message
+        )
+
+        # -------------------------------------------------
+        # Receipt
+        # -------------------------------------------------
+
         try:
-            if bot.handle_possible_receipt(message):
+
+            if bot.handle_possible_receipt(
+                message
+            ):
                 return
+
         except Exception:
+
             pass
 
-        bot.handle_message(message)
+        # -------------------------------------------------
+        # Normal Bot Message
+        # -------------------------------------------------
 
-    # دکمه‌های inline
+        bot.handle_message(
+            message
+        )
+
+    # -----------------------------------------------------
+    # Callback Query
+    # -----------------------------------------------------
+
     elif "callback_query" in update:
-        bot.handle_callback_query(update["callback_query"])
 
+        bot.handle_callback_query(
+            update["callback_query"]
+        )
+
+
+# =========================================================
+# Start
+# =========================================================
 
 if __name__ == "__main__":
+
     main()
