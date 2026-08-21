@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Telegram Bot API helper
-با پشتیبانی از Psiphon Proxy
-"""
-
 import requests
 import json
 import config
@@ -19,7 +14,6 @@ def _post(method, payload=None, files=None):
             url,
             data=payload,
             files=files,
-            proxies=config.PROXY,
             timeout=40
         )
 
@@ -38,7 +32,6 @@ def _post(method, payload=None, files=None):
         }
 
 
-
 def get_updates(offset=None, timeout=config.POLL_TIMEOUT):
 
     data = {
@@ -48,11 +41,7 @@ def get_updates(offset=None, timeout=config.POLL_TIMEOUT):
     if offset is not None:
         data["offset"] = offset
 
-    return _post(
-        "getUpdates",
-        data
-    )
-
+    return _post("getUpdates", data)
 
 
 def send_message(chat_id, text, reply_markup=None, parse_mode=None):
@@ -68,11 +57,7 @@ def send_message(chat_id, text, reply_markup=None, parse_mode=None):
     if parse_mode:
         data["parse_mode"] = parse_mode
 
-    return _post(
-        "sendMessage",
-        data
-    )
-
+    return _post("sendMessage", data)
 
 
 def send_photo(chat_id, photo, caption=None, reply_markup=None):
@@ -88,11 +73,7 @@ def send_photo(chat_id, photo, caption=None, reply_markup=None):
     if reply_markup:
         data["reply_markup"] = reply_markup_to_json(reply_markup)
 
-    return _post(
-        "sendPhoto",
-        data
-    )
-
+    return _post("sendPhoto", data)
 
 
 def edit_message_text(chat_id, message_id, text, reply_markup=None):
@@ -106,11 +87,7 @@ def edit_message_text(chat_id, message_id, text, reply_markup=None):
     if reply_markup:
         data["reply_markup"] = reply_markup_to_json(reply_markup)
 
-    return _post(
-        "editMessageText",
-        data
-    )
-
+    return _post("editMessageText", data)
 
 
 def edit_message_reply_markup(chat_id, message_id, reply_markup=None):
@@ -123,11 +100,7 @@ def edit_message_reply_markup(chat_id, message_id, reply_markup=None):
     if reply_markup:
         data["reply_markup"] = reply_markup_to_json(reply_markup)
 
-    return _post(
-        "editMessageReplyMarkup",
-        data
-    )
-
+    return _post("editMessageReplyMarkup", data)
 
 
 def answer_callback_query(callback_query_id, text=None, show_alert=False):
@@ -140,11 +113,7 @@ def answer_callback_query(callback_query_id, text=None, show_alert=False):
     if text:
         data["text"] = text
 
-    return _post(
-        "answerCallbackQuery",
-        data
-    )
-
+    return _post("answerCallbackQuery", data)
 
 
 def delete_message(chat_id, message_id):
@@ -158,7 +127,6 @@ def delete_message(chat_id, message_id):
     )
 
 
-
 def get_file(file_id):
 
     return _post(
@@ -167,7 +135,6 @@ def get_file(file_id):
             "file_id": file_id
         }
     )
-
 
 
 def download_file(file_path):
@@ -181,35 +148,46 @@ def download_file(file_path):
 
         response = requests.get(
             url,
-            proxies=config.PROXY,
             timeout=40
         )
 
         if response.status_code == 200:
             return response.content
 
-
     except Exception as e:
 
-        print(
-            "[telegram_api DOWNLOAD ERROR]",
-            e
-        )
-
+        print("[telegram_api DOWNLOAD ERROR]", e)
 
     return None
 
 
+def send_photo_bytes(
+    chat_id,
+    photo_bytes,
+    filename="photo.jpg",
+    caption=None,
+    reply_markup=None
+):
 
-def send_photo_bytes(chat_id, photo_bytes, filename="photo.jpg", caption=None, reply_markup=None):
-    """ارسال عکس با آپلود مستقیم بایت‌ها (وقتی عکس از پلتفرم دیگری دانلود شده)."""
-    data = {"chat_id": chat_id}
+    data = {
+        "chat_id": chat_id
+    }
+
     if caption:
         data["caption"] = caption
+
     if reply_markup:
         data["reply_markup"] = reply_markup_to_json(reply_markup)
-    files = {"photo": (filename, photo_bytes)}
-    return _post("sendPhoto", payload=data, files=files)
+
+    files = {
+        "photo": (filename, photo_bytes)
+    }
+
+    return _post(
+        "sendPhoto",
+        payload=data,
+        files=files
+    )
 
 
 def reply_markup_to_json(markup):
@@ -219,5 +197,7 @@ def reply_markup_to_json(markup):
         ensure_ascii=False
     )
 
+
 def is_enabled():
+
     return bool(config.TELEGRAM_BOT_TOKEN)
