@@ -1,0 +1,72 @@
+{% extends "admin/base.html" %}
+{% block title %}تنظیمات سایت — {{ site_name }}{% endblock %}
+
+{% block admin_content %}
+{% set active = "settings" %}
+<h1 style="font-size:24px;">تنظیمات سایت</h1>
+<p style="color:var(--muted); margin-bottom:24px;">تصویر هیرو، متن معرفی و لینک کانال‌ها را از اینجا مدیریت کن.</p>
+
+{% if saved %}<div class="alert success">تنظیمات با موفقیت ذخیره شد ✅</div>{% endif %}
+
+<div class="card" style="max-width:560px;">
+  <form method="post" action="/admin/settings" enctype="multipart/form-data">
+
+    <div class="field">
+      <label>پوستر / بنر صفحه اصلی</label>
+      {% if settings.hero_image %}
+        <div style="margin-bottom:10px; border-radius:10px; overflow:hidden; border:1px solid var(--line);">
+          <img src="{{ settings.hero_image }}" style="width:100%; display:block;">
+        </div>
+      {% endif %}
+      <input type="file" name="hero_image" accept="image/*">
+    </div>
+
+    <div class="field">
+      <label>لوگوی سایت (جایگزین آیکون «ک» در بالای سایت)</label>
+      {% if settings.site_logo %}
+        <div style="margin-bottom:10px;">
+          <img src="{{ settings.site_logo }}" style="height:44px; border-radius:8px;">
+        </div>
+      {% endif %}
+      <input type="file" name="site_logo" accept="image/*">
+    </div>
+
+    <div class="field">
+      <label>متن معرفی (زیر عنوان اصلی صفحه)</label>
+      <textarea name="hero_tagline" rows="3" placeholder="کسب‌یار مارکت جایی‌ست که فروشگاه، مغازه یا خدمات شما دیده می‌شود...">{{ settings.hero_tagline }}</textarea>
+    </div>
+
+    <div class="field">
+      <label>درباره‌ی ما (نمایش در فوتر سایت)</label>
+      <textarea name="about_text" rows="3" placeholder="چند جمله درباره‌ی کسب‌یار مارکت...">{{ settings.about_text }}</textarea>
+    </div>
+
+    <div class="field">
+      <label>نام کاربری کانال تلگرام (بدون @)</label>
+      <input type="text" name="telegram_channel" dir="ltr" style="text-align:left;" value="{{ settings.telegram_channel }}" placeholder="kasbyarmarket">
+    </div>
+
+    <div class="field">
+      <label>نام کاربری کانال بله (بدون @)</label>
+      <input type="text" name="bale_channel" dir="ltr" style="text-align:left;" value="{{ settings.bale_channel }}" placeholder="kasbyarmarket">
+    </div>
+
+    <div class="field">
+      <label>آی‌دی اینستاگرام (بدون @)</label>
+      <input type="text" name="instagram" dir="ltr" style="text-align:left;" value="{{ settings.instagram }}" placeholder="kasbyarmarket">
+    </div>
+
+    <div class="field">
+      <label>شماره واتساپ پشتیبانی (با کد کشور، بدون + یا صفر اول. مثال: 989121234567)</label>
+      <input type="text" name="whatsapp" dir="ltr" style="text-align:left;" value="{{ settings.whatsapp }}" placeholder="989121234567">
+    </div>
+
+    <div class="field">
+      <label>شماره تماس پشتیبانی</label>
+      <input type="tel" name="support_phone" dir="ltr" style="text-align:left;" value="{{ settings.support_phone }}">
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">ذخیره تنظیمات</button>
+  </form>
+</div>
+{% endblock %}

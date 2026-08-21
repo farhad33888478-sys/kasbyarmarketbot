@@ -1,0 +1,29 @@
+# فایل systemd برای اجرای دائمی سایت (حتی بعد از ری‌استارت سرور)
+# این فایل را در مسیر زیر کپی کن:
+#   /etc/systemd/system/kasbyarmarket-web.service
+#
+# سپس:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable kasbyarmarket-web
+#   sudo systemctl start kasbyarmarket-web
+#
+# بررسی وضعیت:
+#   sudo systemctl status kasbyarmarket-web
+# دیدن لاگ‌ها:
+#   sudo journalctl -u kasbyarmarket-web -f
+
+[Unit]
+Description=Kasbyar Market Web (FastAPI/Uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/kasbyarmarketbot
+EnvironmentFile=/opt/kasbyarmarketbot/.env
+ExecStart=/opt/kasbyarmarketbot/venv/bin/gunicorn web.app:app -k uvicorn.workers.UvicornWorker -w 2 -b 127.0.0.1:8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

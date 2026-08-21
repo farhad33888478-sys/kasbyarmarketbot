@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}پنل من — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="wrap">
+  <div class="dash-header">
+    <h1>سلام، {{ user.full_name }} 👋</h1>
+    <p>کسب‌وکارهای ثبت‌شده‌ی تو در بازارچه</p>
+  </div>
+
+  <div style="display:flex; justify-content:flex-end; margin-bottom:20px;">
+    <a href="/business/new" class="btn btn-primary">+ ثبت کسب‌وکار جدید</a>
+  </div>
+
+  {% if businesses %}
+    {% for biz in businesses %}
+      <div class="biz-row">
+        <div class="thumb">
+          {% if biz.photo_url %}
+            <img src="{{ biz.photo_url }}" alt="{{ biz.name }}">
+          {% else %}
+            {{ biz.name[0] }}
+          {% endif %}
+        </div>
+        <div class="info">
+          <div class="name">{{ biz.name }}</div>
+          <div class="meta">{{ biz.category }} · ثبت‌شده در {{ biz.created_at|fa_date }}</div>
+        </div>
+        <span class="status-badge status-{{ biz.status }}">
+          {% if biz.status == 'pending' %}در انتظار تأیید
+          {% elif biz.status == 'approved' %}تأیید‌شده
+          {% elif biz.status == 'rejected' %}رد‌شده
+          {% else %}منقضی‌شده{% endif %}
+        </span>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <h3>هنوز کسب‌وکاری ثبت نکرده‌ای</h3>
+      <p>همین حالا اولین کسب‌وکارت را در بازارچه ثبت کن.</p>
+      <a href="/business/new" class="btn btn-primary" style="margin-top:16px;">ثبت کسب‌وکار</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

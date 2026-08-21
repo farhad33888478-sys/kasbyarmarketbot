@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ biz.name if biz else "یافت نشد" }} — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="wrap" style="padding:44px 0 80px;">
+  {% if biz %}
+    <div class="card" style="max-width:680px; margin:0 auto;">
+      <div class="biz-photo" style="border-radius:14px; margin-bottom:20px; height:220px;">
+        {% if biz.photo_url %}
+          <img src="{{ biz.photo_url }}" alt="{{ biz.name }}">
+        {% else %}
+          {{ biz.name[0] }}
+        {% endif %}
+      </div>
+      <span class="biz-cat">{{ biz.category }}</span>
+      <h1 style="margin-top:12px;">{{ biz.name }}</h1>
+      <p style="color:var(--muted); line-height:1.9;">{{ biz.description or "توضیحی برای این کسب‌وکار ثبت نشده است." }}</p>
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px; font-size:14.5px;">
+        <div>📍 <b>آدرس:</b> {{ biz.address or "ثبت نشده" }}</div>
+        <div>📞 <b>تماس:</b> {{ biz.phone or "ثبت نشده" }}</div>
+      </div>
+      {% if biz.phone %}
+        <a href="tel:{{ biz.phone }}" class="btn btn-primary" style="margin-top:24px;">تماس با کسب‌وکار</a>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3>این کسب‌وکار یافت نشد</h3>
+      <p><a href="/" class="btn btn-outline" style="margin-top:14px;">بازگشت به بازارچه</a></p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}{{ site_name }}{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a href="/" class="brand">
+      {% set hs = site_settings() %}
+      {% if hs.site_logo %}
+        <img src="{{ hs.site_logo }}" class="brand-logo-img" alt="{{ site_name }}">
+      {% else %}
+        <span class="brand-mark">ک</span>
+      {% endif %}
+      <span class="brand-text">کسب‌یار<b>مارکت</b></span>
+    </a>
+
+    <nav class="main-nav">
+      <a href="/">بازارچه</a>
+      {% if user %}
+        <a href="/dashboard">پنل من</a>
+        <a href="/business/new">ثبت کسب‌وکار</a>
+        <a href="/logout" class="nav-ghost">خروج ({{ user.full_name.split(' ')[0] }})</a>
+      {% else %}
+        <a href="/login">ورود</a>
+        <a href="/register" class="nav-cta">ثبت‌نام رایگان</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    {% set fs = site_settings() %}
+    <div>
+      {% if fs.site_logo %}
+        <img src="{{ fs.site_logo }}" class="brand-mark small" style="object-fit:cover;">
+      {% else %}
+        <span class="brand-mark small">ک</span>
+      {% endif %}
+      <span>{{ fs.about_text if fs.about_text else "کسب‌یار مارکت — بازارچه‌ی محلی کسب‌وکارهای شما" }}</span>
+    </div>
+    <div class="footer-links">
+      {% if fs.telegram_channel %}
+        <a href="https://t.me/{{ fs.telegram_channel }}" target="_blank">📣 کانال ما: {{ fs.telegram_channel }}@</a>
+      {% endif %}
+      {% if fs.bale_channel %}
+        <a href="https://ble.ir/{{ fs.bale_channel }}" target="_blank">📣 بله: {{ fs.bale_channel }}@</a>
+      {% endif %}
+      {% if fs.instagram %}
+        <a href="https://instagram.com/{{ fs.instagram }}" target="_blank">📷 اینستاگرام: {{ fs.instagram }}@</a>
+      {% endif %}
+      {% if fs.whatsapp %}
+        <a href="https://wa.me/{{ fs.whatsapp }}" target="_blank">💬 واتساپ پشتیبانی</a>
+      {% endif %}
+      <a href="/">صفحه اصلی</a>
+      <a href="/admin/login">ورود مدیریت</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

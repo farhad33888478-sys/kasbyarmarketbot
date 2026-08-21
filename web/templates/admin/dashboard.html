@@ -1,0 +1,45 @@
+{% extends "admin/base.html" %}
+{% block title %}داشبورد مدیریت — {{ site_name }}{% endblock %}
+
+{% block admin_content %}
+{% set active = "dashboard" %}
+<h1 style="font-size:24px;">داشبورد مدیریت</h1>
+<p style="color:var(--muted); margin-bottom:20px;">وضعیت کلی بازارچه‌ی کسب‌یار مارکت</p>
+
+<div class="stat-row">
+  <div class="stat-box"><div class="num">{{ stats.approved_businesses|fa_number }}</div><div class="label">کسب‌وکار تأیید‌شده</div></div>
+  <div class="stat-box"><div class="num">{{ stats.pending_businesses|fa_number }}</div><div class="label">در انتظار تأیید</div></div>
+  <div class="stat-box"><div class="num">{{ stats.web_users|fa_number }}</div><div class="label">کاربر ثبت‌نامی در وب</div></div>
+  <div class="stat-box"><div class="num">{{ stats.bot_users|fa_number }}</div><div class="label">کاربر ربات تلگرام</div></div>
+</div>
+
+<h2 style="font-size:18px; margin-top:30px;">در انتظار تأیید ({{ pending|length|fa_number }})</h2>
+
+{% if pending %}
+  <table class="admin-table" style="margin-top:14px;">
+    <thead>
+      <tr><th>نام کسب‌وکار</th><th>دسته</th><th>تماس</th><th>ثبت‌شده در</th><th>اقدام</th></tr>
+    </thead>
+    <tbody>
+      {% for biz in pending %}
+      <tr>
+        <td>{{ biz.name }}</td>
+        <td>{{ biz.category }}</td>
+        <td dir="ltr" style="text-align:right;">{{ biz.phone }}</td>
+        <td>{{ biz.created_at|fa_date }}</td>
+        <td style="display:flex; gap:8px;">
+          <form method="post" action="/admin/business/{{ biz.id }}/approve">
+            <button class="btn btn-sm btn-primary" type="submit">تأیید</button>
+          </form>
+          <form method="post" action="/admin/business/{{ biz.id }}/reject">
+            <button class="btn btn-sm btn-danger" type="submit">رد</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="empty-state" style="margin-top:14px;">هیچ کسب‌وکار در انتظاری وجود ندارد.</div>
+{% endif %}
+{% endblock %}

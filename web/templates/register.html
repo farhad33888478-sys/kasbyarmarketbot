@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}ثبت‌نام — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="card">
+    <h1>ساخت حساب کاربری</h1>
+    <p class="sub">با ثبت‌نام، می‌توانی کسب‌وکارت را در بازارچه ثبت کنی.</p>
+
+    {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+    <form method="post" action="/register">
+      <div class="field">
+        <label>نام و نام خانوادگی</label>
+        <input type="text" name="full_name" required placeholder="مثلاً: علی رضایی">
+      </div>
+      <div class="field">
+        <label>شماره موبایل</label>
+        <input type="tel" name="phone" required placeholder="09xxxxxxxxx" dir="ltr" style="text-align:left;">
+      </div>
+      <div class="field">
+        <label>رمز عبور</label>
+        <input type="password" name="password" required placeholder="حداقل ۶ کاراکتر">
+      </div>
+      <div class="field">
+        <label>تکرار رمز عبور</label>
+        <input type="password" name="password2" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">ثبت‌نام</button>
+    </form>
+
+    <p class="form-alt">قبلاً ثبت‌نام کرده‌ای؟ <a href="/login">وارد شو</a></p>
+  </div>
+</div>
+{% endblock %}

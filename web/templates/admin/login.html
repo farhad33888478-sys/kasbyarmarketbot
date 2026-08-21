@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}ورود مدیریت — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="card">
+    <h1>ورود پنل مدیریت</h1>
+    <p class="sub">این بخش فقط برای مدیر سایت است.</p>
+
+    {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+    <form method="post" action="/admin/login">
+      <div class="field">
+        <label>نام کاربری</label>
+        <input type="text" name="username" required dir="ltr" style="text-align:left;">
+      </div>
+      <div class="field">
+        <label>رمز عبور</label>
+        <input type="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">ورود</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

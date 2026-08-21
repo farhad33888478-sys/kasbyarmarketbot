@@ -1,0 +1,11 @@
+# --- ربات (بدون تغییر) ---
+requests>=2.31.0
+
+# --- پنل وب ---
+python-dotenv>=1.0.0
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+jinja2>=3.1.0
+python-multipart>=0.0.9
+itsdangerous>=2.2.0
+gunicorn>=22.0.0

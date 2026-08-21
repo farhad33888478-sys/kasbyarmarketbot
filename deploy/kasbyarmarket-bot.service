@@ -1,0 +1,22 @@
+# فایل systemd برای اجرای دائمی ربات تلگرام روی سرور
+# مسیر: /etc/systemd/system/kasbyarmarket-bot.service
+#
+# sudo systemctl daemon-reload
+# sudo systemctl enable kasbyarmarket-bot
+# sudo systemctl start kasbyarmarket-bot
+
+[Unit]
+Description=Kasbyar Market Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/kasbyarmarketbot
+EnvironmentFile=/opt/kasbyarmarketbot/.env
+ExecStart=/opt/kasbyarmarketbot/venv/bin/python main.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}ورود — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="card">
+    <h1>ورود به حساب</h1>
+    <p class="sub">با شماره موبایل و رمز عبورت وارد شو.</p>
+
+    {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+    <form method="post" action="/login">
+      <div class="field">
+        <label>شماره موبایل</label>
+        <input type="tel" name="phone" required placeholder="09xxxxxxxxx" dir="ltr" style="text-align:left;">
+      </div>
+      <div class="field">
+        <label>رمز عبور</label>
+        <input type="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">ورود</button>
+    </form>
+
+    <p class="form-alt">حساب نداری؟ <a href="/register">ثبت‌نام کن</a></p>
+  </div>
+</div>
+{% endblock %}

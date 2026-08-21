@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ site_name }} — بازارچه‌ی محلی کسب‌وکارها{% endblock %}
+
+{% block content %}
+
+<section class="hero" {% if settings.hero_image %}style="background-image:linear-gradient(rgba(245,247,243,.88),rgba(245,247,243,.96)), url('{{ settings.hero_image }}'); background-size:cover; background-position:center;"{% endif %}>
+  <div class="wrap hero-inner">
+    <span class="eyebrow">🏷️ بازارچه‌ی آنلاین کسب‌وکارهای محلی</span>
+    <h1>کسب‌وکارت را <span>ببینند</span>،<br>مشتری‌ات را پیدا کن.</h1>
+    <p class="lead">{{ settings.hero_tagline if settings.hero_tagline else "کسب‌یار مارکت جایی‌ست که فروشگاه، مغازه یا خدمات شما در کنار صدها کسب‌وکار دیگر دیده می‌شود — رایگان ثبت کن، مشتری‌های محله‌ات را پیدا کن." }}</p>
+    <div class="hero-actions">
+      {% if user %}
+        <a href="/business/new" class="btn btn-primary">ثبت کسب‌وکار جدید</a>
+      {% else %}
+        <a href="/register" class="btn btn-primary">ثبت رایگان کسب‌وکار</a>
+      {% endif %}
+      <a href="#listing" class="btn btn-outline">مشاهده‌ی بازارچه</a>
+    </div>
+  </div>
+</section>
+
+<div class="tile-divider"></div>
+
+<div class="wrap">
+  <div class="filters">
+    <form method="get" action="/">
+      <input class="search-input" type="text" name="q" placeholder="جستجو در بازارچه… مثلاً «آرایشگاه» یا «تعمیرات موبایل»" value="{{ search_query }}">
+      <select name="category">
+        <option value="">همه‌ی دسته‌ها</option>
+        {% for c in categories %}
+          <option value="{{ c }}" {% if c == selected_category %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-primary" type="submit">جستجو</button>
+    </form>
+  </div>
+
+  <section class="listing" id="listing">
+    <div class="section-head">
+      <h2>کسب‌وکارهای بازارچه</h2>
+      <span class="count-tag">{{ businesses|length|fa_number }} کسب‌وکار</span>
+    </div>
+
+    {% if businesses %}
+      <div class="biz-grid">
+        {% for biz in businesses %}
+          <a href="/business/{{ biz.id }}" class="biz-card">
+            <div class="biz-photo">
+              {% if biz.photo_url %}
+                <img src="{{ biz.photo_url }}" alt="{{ biz.name }}" loading="lazy">
+              {% else %}
+                {{ biz.name[0] }}
+              {% endif %}
+            </div>
+            <div class="biz-body">
+              <span class="biz-cat">{{ biz.category }}</span>
+              <h3 class="biz-title">{{ biz.name }}</h3>
+              <p class="biz-desc">{{ biz.description or "توضیحی ثبت نشده است." }}</p>
+              <span class="biz-meta">📍 {{ biz.address or "بدون آدرس" }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <h3>هنوز کسب‌وکاری در این دسته ثبت نشده</h3>
+        <p>اولین نفری باش که کسب‌وکارت را در این بازارچه ثبت می‌کنی.</p>
+      </div>
+    {% endif %}
+  </section>
+</div>
+
+{% endblock %}

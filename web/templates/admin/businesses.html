@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% block title %}همه‌ی کسب‌وکارها — {{ site_name }}{% endblock %}
+
+{% block admin_content %}
+{% set active = "businesses" %}
+<h1 style="font-size:24px;">همه‌ی کسب‌وکارها</h1>
+<p style="color:var(--muted); margin-bottom:20px;">{{ businesses|length|fa_number }} کسب‌وکار ثبت‌شده</p>
+
+<table class="admin-table">
+  <thead>
+    <tr><th>نام</th><th>دسته</th><th>وضعیت</th><th>تماس</th><th>ثبت‌شده در</th></tr>
+  </thead>
+  <tbody>
+    {% for biz in businesses %}
+    <tr>
+      <td>{{ biz.name }}</td>
+      <td>{{ biz.category }}</td>
+      <td><span class="status-badge status-{{ biz.status }}">
+        {% if biz.status == 'pending' %}در انتظار
+        {% elif biz.status == 'approved' %}تأیید‌شده
+        {% elif biz.status == 'rejected' %}رد‌شده
+        {% else %}منقضی{% endif %}
+      </span></td>
+      <td dir="ltr" style="text-align:right;">{{ biz.phone }}</td>
+      <td>{{ biz.created_at|fa_date }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

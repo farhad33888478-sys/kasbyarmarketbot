@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}ثبت کسب‌وکار — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrap" style="max-width:560px;">
+  <div class="card">
+    <h1>ثبت کسب‌وکار جدید</h1>
+    <p class="sub">اطلاعات را کامل پر کن؛ بعد از تأیید مدیریت، کسب‌وکارت در بازارچه نمایش داده می‌شود.</p>
+
+    {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+    <form method="post" action="/business/new" enctype="multipart/form-data">
+      <div class="field">
+        <label>نام کسب‌وکار</label>
+        <input type="text" name="name" required placeholder="مثلاً: فروشگاه پوشاک آرمان">
+      </div>
+      <div class="field">
+        <label>دسته‌بندی</label>
+        <select name="category" required>
+          <option value="">انتخاب کن…</option>
+          {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>توضیحات</label>
+        <textarea name="description" rows="4" placeholder="چند جمله درباره‌ی کسب‌وکارت بنویس…"></textarea>
+      </div>
+      <div class="field">
+        <label>شماره تماس</label>
+        <input type="tel" name="phone" required dir="ltr" style="text-align:left;">
+      </div>
+      <div class="field">
+        <label>آدرس</label>
+        <input type="text" name="address" placeholder="شهر، منطقه، آدرس تقریبی">
+      </div>
+      <div class="field">
+        <label>تصویر یا لوگو (اختیاری)</label>
+        <input type="file" name="photo" accept="image/*">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">ارسال برای بررسی</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
