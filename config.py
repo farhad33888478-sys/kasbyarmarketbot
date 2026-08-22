@@ -166,7 +166,7 @@ BALE_CHANNEL_ID = _env("BALE_CHANNEL_ID", "@kasbyarmarket")
 # Psiphon Proxy
 # ===============================
 
-PROXY = None if _env("RENDER", "").lower() == "true" else {
+PROXY = {} if _env("RENDER", "").lower() == "true" else {
     "http": "socks5h://127.0.0.1:10808",
     "https": "socks5h://127.0.0.1:10808"
 }
