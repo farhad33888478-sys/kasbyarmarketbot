@@ -10,7 +10,12 @@ def _post(method, payload=None, files=None):
     url = f"{config.TELEGRAM_API_URL}/{method}"
 
     try:
-        response = requests.post(
+        session = requests.Session()
+
+        # تنظیم صریح پروکسی
+        session.proxies.update(config.PROXY)
+
+        response = session.post(
             url,
             data=payload,
             files=files,
@@ -24,7 +29,7 @@ def _post(method, payload=None, files=None):
 
     except Exception as e:
 
-        print("[telegram_api ERROR]", e)
+        print("[telegram_api ERROR]", repr(e))
 
         return {
             "ok": False,
@@ -148,11 +153,17 @@ def download_file(file_path):
 
         response = requests.get(
             url,
+            proxies=config.PROXY,
             timeout=40
         )
 
+        print("[telegram_api DOWNLOAD]", response.status_code)
+
         if response.status_code == 200:
+            print("[telegram_api DOWNLOAD] bytes:", len(response.content))
             return response.content
+
+        print("[telegram_api DOWNLOAD ERROR]", response.text[:500])
 
     except Exception as e:
 
