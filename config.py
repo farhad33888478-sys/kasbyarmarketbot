@@ -154,7 +154,7 @@ EXPIRY_CHECK_INTERVAL_SECONDS = 6 * 60 * 60
 # Bale / Eitaa
 # ===============================
 
-BALE_ENABLED = True
+BALE_ENABLED = _env("BALE_ENABLED", "false").lower() == "true"
 
 EITAA_ENABLED = False
 
