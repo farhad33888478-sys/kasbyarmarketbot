@@ -13,7 +13,8 @@ def _post(method, payload=None, files=None):
         session = requests.Session()
 
         # تنظیم صریح پروکسی
-        session.proxies.update(config.PROXY)
+        if config.PROXY:
+            session.proxies.update(config.PROXY)
 
         response = session.post(
             url,
